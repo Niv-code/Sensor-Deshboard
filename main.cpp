@@ -8,7 +8,7 @@
 #include <random>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#pragma comment(lib, "ws2_32.lib")  // Link Winsock library
+#pragma comment(lib, "ws2_32.lib")  
 
 inline uint16_t crc16_ccitt(const uint8_t* data, size_t length)
 {
@@ -31,9 +31,7 @@ inline uint16_t crc16_ccitt(const uint8_t* data, size_t length)
 }
 std::mutex print_mutex;
 
-// ---------------------------
-// UDP Helpers for Windows
-// ---------------------------
+
 SOCKET create_socket()
 {
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -56,9 +54,7 @@ void send_packet(SOCKET sock, int port, const std::vector<uint8_t>& packet)
         reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
 }
 
-// ---------------------------
-// VOLTAGE SENSOR (1ms) - Port 5001
-// ---------------------------
+
 void voltage_sensor()
 {
     SOCKET sock = create_socket();
@@ -79,12 +75,12 @@ void voltage_sensor()
         if (rare_event(eng) == 1)
         {
             spike = true;
-            spike_counter = 50; // 50ms spike
+            spike_counter = 50; 
         }
 
         if (spike)
         {
-            base = 15000; // 15V overvoltage
+            base = 15000; 
             spike_counter--;
             if (spike_counter <= 0)
             {
@@ -131,9 +127,7 @@ void voltage_sensor()
     }
 }
 
-// ---------------------------
-// GAS SENSOR (10ms) - Port 5002
-// ---------------------------
+
 void gas_sensor()
 {
     SOCKET sock = create_socket();
@@ -159,7 +153,7 @@ void gas_sensor()
 
         if (leak)
         {
-            ppm += 15; // ramp up leak
+            ppm += 15;
             leak_phase++;
             if (leak_phase > 30)
                 leak = false;
@@ -202,9 +196,7 @@ void gas_sensor()
     }
 }
 
-// ---------------------------
-// LIGHT SENSOR (100ms) - Port 5003
-// ---------------------------
+
 void light_sensor()
 {
     SOCKET sock = create_socket();
@@ -268,12 +260,10 @@ void light_sensor()
     }
 }
 
-// ---------------------------
-// MAIN
-// ---------------------------
+
 int main()
 {
-    // Initialize Winsock
+    
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
